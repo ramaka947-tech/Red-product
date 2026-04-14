@@ -18,7 +18,6 @@ function closeModal() {
     document.body.style.overflow = '';
 }
 
-// Clic sur le fond sombre = fermer
 document.getElementById('modalOverlay').addEventListener('click', function (e) {
     if (e.target === this) closeModal();
 });
