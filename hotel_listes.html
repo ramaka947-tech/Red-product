@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des hôtels - RED PRODUCT</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+
+<body class="w-full h-full">
+
+    <div class="flex md:hidden justify-between items-center bg-[#45484B] text-white px-4 py-3">
+        <span class="font-bold text-xl">RED PRODUCT</span>
+        <button onclick="toggleMenu()">
+            <i class="fa-solid fa-bars text-2xl"></i>
+        </button>
+    </div>
+
+    <div id="overlay" class="hidden fixed inset-0 bg-black/40 z-40 md:hidden" onclick="toggleMenu()"></div>
+
+    <div class="flex flex-row">
+
+        <div class="hidden md:flex flex-col fixed md:relative z-50 w-[260px] md:w-[364px] h-[100vh] bg-[#45484B] text-white"
+            id="sidebar">
+
+            <div class="flex md:hidden justify-end px-4 pt-3">
+                <button onclick="toggleMenu()" class="text-white text-2xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="px-4 py-4 flex gap-4 items-center">
+                <img src="IMAGE/logo-red.png" alt="" class="w-[32px] h-[32px]">
+                <h1 class="font-bold text-[22px] whitespace-nowrap">RED PRODUCT</h1>
+            </div>
+
+            <div>
+                <div class="pl-5 py-2 text-[14px] text-[#FFFFFF99]">
+                    <span>Principal</span>
+                </div>
+
+                <a href="dashboard.html"
+                    class="px-4 flex gap-4 items-center h-[48px] text-white hover:bg-[#FFFFFF20] cursor-pointer">
+                    <img src="IMAGE/Logo dash.png" alt="" class="w-[23px] h-[23px] text-white">
+                    <span class="font-medium text-[16px]">Dashboard</span>
+                </a>
+
+                <a href="hotel_listes.html"
+                    class="px-4 flex gap-4 items-center h-[48px] bg-[#FFFFFF] cursor-pointer">
+                    <img src="IMAGE/hotel logo.png" alt="" class="w-[23px] h-[23px] bg-[#4D5154]">
+                    <span class="font-medium text-[16px] text-[#4D5154]">Liste des hôtels</span>
+                </a>
+            </div>
+
+            <div class="mt-auto flex items-center px-4 py-4 border-t border-[#FFFFFF21]">
+                <div class="w-[48px] h-[48px] mr-4">
+                    <img src="IMAGE/MB.png" alt="" class="rounded-full w-full h-full object-cover">
+                </div>
+                <div class="flex flex-col gap-1">
+                    <span class="text-[16px]">Mouhamet Badiane</span>
+                    <div class="flex items-center gap-2">
+                        <div class="w-[10px] h-[10px] bg-green-500 rounded-full"></div>
+                        <span class="text-[13px] text-[#FFFFFFDE]">en ligne</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col flex-1 bg-[#F0F0F0] min-h-screen">
+
+            <div
+                class="flex justify-between items-center w-full h-[74px] shadow-md bg-[#FFFFFF] text-[#4D5154] border-b border-[1.33px] border-[#A0A0A033] px-6">
+                <h1 class="font-medium text-[18px]">Liste des hôtels</h1>
+                <div class="flex items-center gap-4">
+                    <div
+                        class="hidden sm:flex relative border border-[#A0A0A033] rounded-full px-4 py-1 items-center gap-2">
+                        <i class="fa-solid fa-magnifying-glass text-[#A0A0A0]"></i>
+                        <input type="search" placeholder="Recherche" class="outline-none text-sm bg-transparent">
+                    </div>
+                    <div class="relative text-[20px]">
+                        <i class="fa-regular fa-bell"></i>
+                        <span
+                            class="absolute -top-1 -right-1 text-[9px] rounded text-white bg-[#FCC100] w-[16px] h-[16px] flex items-center justify-center font-bold">3</span>
+                    </div>
+                    <div class="relative w-[38px] h-[38px]">
+                        <img src="IMAGE/MB.png" alt="" class="rounded-full w-full h-full object-cover">
+                        <span
+                            class="absolute bottom-0 right-0 w-[11px] h-[11px] border-2 border-white rounded-full bg-[#00FF92]"></span>
+                    </div>
+                    <a href=""><i class="fa-solid fa-arrow-right-from-bracket text-[18px]"></i></a>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center px-6 py-4 bg-[#FFFFFF] border-b border-[1.33px] border-[#A0A0A033] shadow-sm">
+                <h2 class="font-light text-[24px] text-[#4D5154]">Hôtels <span class="text-[18px] font-normal">8</span></h2>
+                <button onclick="openModal()"
+                    class="flex items-center gap-2 bg-[#FFFFFF] border border-[#DDDDDD] text-[#4D5154] px-4 py-2 rounded-lg text-[14px] font-medium hover:bg-[#F0F0F0] shadow-sm transition">
+                    <i class="fa-solid fa-plus"></i>
+                    Créer un nouveau hôtel
+                </button>
+            </div>
+
+            <div class="px-4 py-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+                <div class="bg-white rounded-xl overflow-hidden shadow-sm">
+                    <img src="IMAGE/Terou Bi.jpeg" class="w-full h-[180px] object-cover">
+                    <div class="p-3">
+                        <p class="text-[#8D4B38] text-[12px]">Boulevard Martin Luther King Dakar, 11500</p>
+                        <h2 class="font-semibold text-[16px]">Hôtel Terrou-Bi</h2>
+                        <p class="text-[13px] text-[#555555]">25.000 XOF par nuit</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl overflow-hidden shadow-sm">
+                    <img src="IMAGE/King Fahd.jpeg" class="w-full h-[180px] object-cover">
+                    <div class="p-3">
+                        <p class="text-[#8D4B38] text-[12px]">Rte des Almadies, Dakar</p>
+                        <h2 class="font-semibold text-[16px]">King Fahd Palace</h2>
+                        <p class="text-[13px] text-[#555555]">20.000 XOF par nuit</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl overflow-hidden shadow-sm">
+                    <img src="IMAGE/Radisson.jpeg" class="w-full h-[180px] object-cover">
+                    <div class="p-3">
+                        <p class="text-[#8D4B38] text-[12px]">Rte de la Corniche O, Dakar 16868</p>
+                        <h2 class="font-semibold text-[16px]">Radisson Blu Hotel</h2>
+                        <p class="text-[13px] text-[#555555]">22.000 XOF par nuit</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl overflow-hidden shadow-sm">
+                    <img src="IMAGE/Pullman.jpeg" class="w-full h-[180px] object-cover">
+                    <div class="p-3">
+                        <p class="text-[#8D4B38] text-[12px]">Place de l'Indépendance, 10 Rue PL 29, Dakar</p>
+                        <h2 class="font-semibold text-[16px]">Pullman Dakar Teranga</h2>
+                        <p class="text-[13px] text-[#555555]">30.000 XOF par nuit</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl overflow-hidden shadow-sm">
+                    <img src="IMAGE/Lac Rose.jpeg" class="w-full h-[180px] object-cover">
+                    <div class="p-3">
+                        <p class="text-[#8D4B38] text-[12px]">Lac Rose, Dakar</p>
+                        <h2 class="font-semibold text-[16px]">Hôtel Lac Rose</h2>
+                        <p class="text-[13px] text-[#555555]">25.000 XOF par nuit</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl overflow-hidden shadow-sm">
+                    <img src="IMAGE/Saly.jpeg" class="w-full h-[180px] object-cover">
+                    <div class="p-3">
+                        <p class="text-[#8D4B38] text-[12px]">Mbour, Sénégal</p>
+                        <h2 class="font-semibold text-[16px]">Hôtel Saly</h2>
+                        <p class="text-[13px] text-[#555555]">20.000 XOF par nuit</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl overflow-hidden shadow-sm">
+                    <img src="IMAGE/Palm Beach.jpeg" class="w-full h-[180px] object-cover">
+                    <div class="p-3">
+                        <p class="text-[#8D4B38] text-[12px]">BP64, Saly 23000</p>
+                        <h2 class="font-semibold text-[16px]">Palm Beach Resort & Spa</h2>
+                        <p class="text-[13px] text-[#555555]">22.000 XOF par nuit</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl overflow-hidden shadow-sm">
+                    <img src="IMAGE/Pullman.jpeg" class="w-full h-[180px] object-cover">
+                    <div class="p-3">
+                        <p class="text-[#8D4B38] text-[12px]">Place de l'Indépendance, 10 Rue PL 29, Dakar</p>
+                        <h2 class="font-semibold text-[16px]">Pullman Dakar Teranga</h2>
+                        <p class="text-[13px] text-[#555555]">30.000 XOF par nuit</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div id="modalOverlay"
+            class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4 py-6 overflow-y-auto">
+
+            <div class="bg-white rounded-xl shadow-lg w-full max-w-[620px] p-6">
+
+                <div class="flex items-center gap-3 pb-4 mb-6 border-b border-dashed border-[#DDDDDD]">
+                    <button onclick="closeModal()"
+                        class="text-[#555555] text-[18px] hover:text-black transition">←</button>
+                    <h1 class="font-bold text-[18px] text-[#555555] tracking-wide">CRÉER UN NOUVEAU HÔTEL</h1>
+                </div>
+
+                <form action="">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[14px] font-medium text-[#555555]">Nom de l'hôtel</label>
+                            <input type="text" placeholder="CAP Marniane"
+                                class="border border-[#DDDDDD] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#555555]">
+                        </div>
+
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[14px] font-medium text-[#555555]">Adresse</label>
+                            <input type="text" placeholder="Les îles du saloum, Mar Lodj"
+                                class="border border-[#DDDDDD] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#555555]">
+                        </div>
+
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[14px] font-medium text-[#555555]">E-mail</label>
+                            <input type="email" placeholder="information@gmail.com"
+                                class="border border-[#DDDDDD] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#555555]">
+                        </div>
+
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[14px] font-medium text-[#555555]">Numéro de téléphone</label>
+                            <input type="tel" placeholder="+221 77 777 77 77"
+                                class="border border-[#DDDDDD] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#555555]">
+                        </div>
+
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[14px] font-medium text-[#555555]">Prix par nuit</label>
+                            <input type="number" placeholder="25.000 XOF"
+                                class="border border-[#DDDDDD] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#555555]">
+                        </div>
+
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[14px] font-medium text-[#555555]">Devise</label>
+                            <select
+                                class="border border-[#DDDDDD] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#555555] bg-white">
+                                <option value="xof">F XOF</option>
+                                <option value="eur">Euro</option>
+                                <option value="usd">Dollar</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="flex flex-col gap-2 mt-6">
+                        <label class="text-[14px] font-medium text-[#555555]">Ajouter une photo</label>
+                        <label for="photo"
+                            class="border border-[#DDDDDD] rounded-xl h-[120px] flex flex-col items-center justify-center cursor-pointer text-[#AAAAAA] hover:border-[#555555] transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 mb-2 text-[#CCCCCC]" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span class="text-[13px]">Ajouter une photo</span>
+                            <input type="file" id="photo" class="hidden" accept="image/*">
+                        </label>
+                    </div>
+
+                    <div class="flex justify-end mt-6">
+                        <button type="submit"
+                            class="bg-[#333333] text-white px-8 py-3 rounded-xl text-[15px] font-medium hover:bg-[#555555] transition">
+                            Enregistrer
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+
+        <script src="scrip.js"></script>
+
+</body>
+
+</html>
