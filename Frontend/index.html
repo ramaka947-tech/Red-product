@@ -41,22 +41,24 @@
                 </div>
 
                 <a href="index.html" class="px-4 flex gap-4 items-center h-[48px] bg-[#FFFFFF] text-[#4D5154]">
-                    <img src="IMAGE/Logo dash.png" alt="" class="w-[23px] h-[23px] ">
+                    <img src="IMAGE/Logo dash.png" alt="" class="w-[23px] h-[23px]">
                     <span class="font-medium text-[16px]">Dashboard</span>
                 </a>
 
                 <a href="hotel_listes.html" class="px-4 flex gap-4 items-center h-[48px] text-white hover:bg-[#FFFFFF20] cursor-pointer">
-                    <img src="IMAGE/hotel logo.png" alt="" class="w-[23px] h-[23px] ">
+                    <img src="IMAGE/hotel logo.png" alt="" class="w-[23px] h-[23px]">
                     <span class="font-medium text-[16px]">Liste des hotels</span>
                 </a>
             </div>
 
             <div class="mt-auto flex items-center px-4 py-4 border-t border-[#FFFFFF21]">
                 <div class="w-[48px] h-[48px] mr-4">
-                    <img src="IMAGE/MB.png" alt="" class="rounded-full w-full h-full object-cover">
+                    <div class="rounded-full w-full h-full bg-[#666] flex items-center justify-center text-white">
+                        <i class="fa-solid fa-user text-[18px]"></i>
+                    </div>
                 </div>
                 <div class="flex flex-col gap-1">
-                    <span class="text-[16px]">Mouhamet Badiane</span>
+                    <span id="userNom" class="text-[16px]">...</span>
                     <div class="flex items-center gap-2">
                         <div class="w-[10px] h-[10px] bg-green-500 rounded-full"></div>
                         <span class="text-[13px] text-[#FFFFFFDE]">en ligne</span>
@@ -71,7 +73,7 @@
             <div class="flex justify-between items-center w-full h-[74px] shadow-md bg-[#FFFFFF] text-[#4D5154] border-b border-[1.33px] border-[#A0A0A033] px-6">
                 <h1 class="font-medium text-[18px]">Dashboard</h1>
                 <div class="flex items-center gap-4">
- 
+
                     <div class="hidden sm:flex relative border border-[#A0A0A033] rounded-full px-4 py-1 items-center gap-2">
                         <i class="fa-solid fa-magnifying-glass text-[#A0A0A0]"></i>
                         <input type="search" placeholder="Recherche" class="outline-none text-sm bg-transparent">
@@ -83,11 +85,13 @@
                     </div>
 
                     <div class="relative w-[38px] h-[38px]">
-                        <img src="IMAGE/MB.png" alt="" class="rounded-full w-full h-full object-cover">
+                        <div class="rounded-full w-full h-full bg-[#45484B] flex items-center justify-center text-white">
+                            <i class="fa-solid fa-user text-[16px]"></i>
+                        </div>
                         <span class="absolute bottom-0 right-0 w-[11px] h-[11px] border-2 border-white rounded-full bg-[#00FF92]"></span>
                     </div>
 
-                    <a href="connexion.html"><i class="fa-solid fa-arrow-right-from-bracket text-[18px]"></i></a>
+                    <a href="#" onclick="deconnexion()"><i class="fa-solid fa-arrow-right-from-bracket text-[18px]"></i></a>
                 </div>
             </div>
 
@@ -104,17 +108,17 @@
                     </div>
                     <div>
                         <h1 class="text-[28px] font-light">125 <span class="text-[15px]">Formulaires</span></h1>
-                        <p class="opacity-60 text-[14px]">Je ne sais pas quoi mettre</p>
+                        <p class="opacity-60 text-[14px]">Total des formulaires</p>
                     </div>
                 </div>
 
                 <div class="w-full h-[106px] bg-[#FFFFFF] shadow-md flex items-center gap-2 rounded-xl">
                     <div class="bg-[#0CC2AA] w-[64px] h-[64px] rounded-full mx-4 flex items-center justify-center text-[22px] text-white font-bold">
-                        P
+                        <i class="fa-solid fa-message"></i>
                     </div>
                     <div>
                         <h1 class="text-[28px] font-light">40 <span class="text-[15px]">Messages</span></h1>
-                        <p class="opacity-60 text-[14px]">Je ne sais pas quoi mettre</p>
+                        <p class="opacity-60 text-[14px]">Total des messages</p>
                     </div>
                 </div>
 
@@ -124,37 +128,37 @@
                     </div>
                     <div>
                         <h1 class="text-[28px] font-light">600 <span class="text-[15px]">Utilisateurs</span></h1>
-                        <p class="opacity-60 text-[14px]">Je ne sais pas quoi mettre</p>
+                        <p class="opacity-60 text-[14px]">Total des utilisateurs</p>
                     </div>
                 </div>
 
                 <div class="w-full h-[106px] bg-[#FFFFFF] shadow-md flex items-center gap-2 rounded-xl">
                     <div class="bg-[#F90000] w-[64px] h-[64px] rounded-full mx-4 flex items-center justify-center text-[22px] text-white">
-                        <i class="fa-solid fa-envelope-open"></i>
+                        <i class="fa-solid fa-envelope"></i>
                     </div>
                     <div>
                         <h1 class="text-[28px] font-light">125 <span class="text-[15px]">E-mails</span></h1>
-                        <p class="opacity-60 text-[14px]">Je ne sais pas quoi mettre</p>
+                        <p class="opacity-60 text-[14px]">Total des e-mails</p>
                     </div>
                 </div>
 
                 <div class="w-full h-[106px] bg-[#FFFFFF] shadow-md flex items-center gap-2 rounded-xl">
-                    <div class="bg-[#9C27B0] w-[64px] h-[64px] rounded-full mx-4 flex items-center justify-center text-[22px] text-white font-bold">
-                        P
+                    <div class="bg-[#9C27B0] w-[64px] h-[64px] rounded-full mx-4 flex items-center justify-center text-[22px] text-white">
+                        <i class="fa-solid fa-hotel"></i>
                     </div>
                     <div>
-                        <h1 class="text-[28px] font-light">40 <span class="text-[15px]">Hôtels</span></h1>
-                        <p class="opacity-60 text-[14px]">Je ne sais pas quoi mettre</p>
+                        <h1 class="text-[28px] font-light"><span id="compteurHotels">0</span> <span class="text-[15px]">Hôtels</span></h1>
+                        <p class="opacity-60 text-[14px]">Total des hôtels</p>
                     </div>
                 </div>
 
                 <div class="w-full h-[106px] bg-[#FFFFFF] shadow-md flex items-center gap-2 rounded-xl">
                     <div class="bg-[#1565C0] w-[64px] h-[64px] rounded-full mx-4 flex items-center justify-center text-[22px] text-white">
-                        <i class="fa-solid fa-users"></i>
+                        <i class="fa-solid fa-building"></i>
                     </div>
                     <div>
                         <h1 class="text-[28px] font-light">02 <span class="text-[15px]">Entités</span></h1>
-                        <p class="opacity-60 text-[14px]">Je ne sais pas quoi mettre</p>
+                        <p class="opacity-60 text-[14px]">Total des entités</p>
                     </div>
                 </div>
 
@@ -162,7 +166,7 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="index.js"></script>
 
 </body>
 
