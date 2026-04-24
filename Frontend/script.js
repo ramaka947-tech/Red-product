@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://red-product-kjmc.onrender.com/api';
 const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
 document.addEventListener('DOMContentLoaded', function () {
