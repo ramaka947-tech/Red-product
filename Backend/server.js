@@ -16,8 +16,8 @@ connectDB();
 
 // Middleware
 app.use(cors({
-  origin: 'https://red-product-xi.vercel.app',
-  credentials: true
+  origin: '*',
+  credentials: false
 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
