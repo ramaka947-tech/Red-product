@@ -4,36 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inscription</title>
+    <title>Connexion</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 
 <body class="bg-[#494C4F] min-h-screen flex justify-center items-center px-4 py-8">
 
-    <form action="" class="w-full max-w-[400px]">
+    <form id="loginForm" class="w-full max-w-[400px]">
 
-        
         <div class="flex justify-center items-center text-[#FFFFFFDE] font-bold text-[21px] gap-4 mb-6">
             <img src="IMAGE/logo-red.png" alt="" class="w-[32px] h-[32px]">
             <h1>RED PRODUCT</h1>
         </div>
 
-        
         <div class="bg-[#F0F0F0] flex flex-col px-6 py-8 rounded-lg w-full">
-            <h1 class="font-medium text-[17px] mb-6">Inscrivez-vous en tant que Admin</h1>
+            <h1 class="font-medium text-[17px] mb-6">Connectez-vous en tant que Admin</h1>
 
-            <input type="text" placeholder="Nom"
+            <input type="email" id="email" placeholder="E-mail"
                 class="mb-6 w-full h-[45px] border-b border-[#A0A0A033] bg-transparent outline-none text-[15px]">
 
-            <input type="email" placeholder="E-mail"
-                class="mb-6 w-full h-[45px] border-b border-[#A0A0A033] bg-transparent outline-none text-[15px]">
-
-            <input type="password" placeholder="Mot de passe"
+            <input type="password" id="motDePasse" placeholder="Mot de passe"
                 class="mb-6 w-full h-[45px] border-b border-[#A0A0A033] bg-transparent outline-none text-[15px]">
 
             <label class="flex items-center gap-3 cursor-pointer">
                 <input type="checkbox" class="w-[20px] h-[20px]">
-                <span class="text-[15px]">Accepter les termes et la politique</span>
+                <span class="text-[15px]">Gardez-moi connecté</span>
             </label>
 
             <button type="submit"
@@ -42,17 +37,17 @@
             </button>
         </div>
 
-        
         <div class="flex flex-col items-center mt-6 gap-3">
+            <a href="password.html" class="text-[#FFD964] font-semibold text-[17px]">Mot de passe oublié</a>
             <p class="text-[#FFFFFFDE] text-[18.67px] text-center">
-                Vous avez déja un compte ?
-                <a href="connexion.html" class="text-[#FFD964] font-bold">Se connecter</a>
+                Vous n'avez pas de compte ?
+                <a href="inscription.html" class="text-[#FFD964] font-bold">S'inscrire</a>
             </p>
         </div>
 
     </form>
 
+    <script src="connexion.js"></script>
 </body>
 
 </html>
-

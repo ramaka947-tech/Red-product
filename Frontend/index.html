@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+
+<body class="w-full h-full">
+
+    <div class="flex md:hidden justify-between items-center bg-[#45484B] text-white px-4 py-3">
+        <span class="font-bold text-xl">RED PRODUCT</span>
+        <button onclick="toggleMenu()">
+            <i class="fa-solid fa-bars text-2xl"></i>
+        </button>
+    </div>
+
+    <div id="overlay" class="hidden fixed inset-0 bg-black/40 z-40 md:hidden" onclick="toggleMenu()"></div>
+
+    <div class="flex flex-row">
+
+        <div class="hidden md:flex flex-col fixed top-0 left-0 bottom-0 md:relative z-50 w-[260px] md:w-[364px] bg-[#45484B] text-white"
+            id="sidebar">
+
+            <div class="flex md:hidden justify-end px-4 pt-3">
+                <button onclick="toggleMenu()" class="text-white text-2xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="px-4 py-4 flex gap-4 items-center">
+                <img src="IMAGE/logo-red.png" alt="" class="w-[32px] h-[32px]">
+                <h1 class="font-bold text-[22px] whitespace-nowrap">RED PRODUCT</h1>
+            </div>
+
+            <div>
+                <div class="pl-5 py-2 text-[14px] text-[#FFFFFF99]">
+                    <span>Principal</span>
+                </div>
+
+                <a href="index.html" class="px-4 flex gap-4 items-center h-[48px] bg-white text-[#4D5154]">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 10h4V3H3v7zm0 11h4v-7H3v7zm7 0h4v-4h-4v4zm0-18v10h4V3h-4zm7 18h4v-7h-4v7zm0-11h4V3h-4v7z" />
+                    </svg>
+                    <span class="font-medium text-[16px]">Dashboard</span>
+                </a>
+
+                <a href="hotel_listes.html"
+                    class="px-4 flex gap-4 items-center h-[48px] text-white hover:bg-[#FFFFFF20]">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 21h18M5 21V7a2 2 0 012-2h10a2 2 0 012 2v14M9 9h6M9 13h6" />
+                    </svg>
+                    <span class="font-medium text-[16px]">Liste des hôtels</span>
+                </a>
+            </div>
+
+            <!-- Photo + Nom en bas du sidebar -->
+            <div class="mt-auto flex items-center px-4 py-3 border-t border-[#FFFFFF21]">
+                <button onclick="ouvrirModalProfil()"
+                    class="w-[40px] h-[40px] mr-3 rounded-full overflow-hidden bg-[#666] flex items-center justify-center text-white flex-shrink-0">
+                    <div id="photoProfilSidebar" class="w-full h-full flex items-center justify-center">
+                        <i class="fa-solid fa-user text-[16px]"></i>
+                    </div>
+                </button>
+                <div class="flex flex-col gap-1">
+                    <span id="userNom" class="text-[14px]">...</span>
+                    <div class="flex items-center gap-2">
+                        <div class="w-[8px] h-[8px] bg-green-500 rounded-full"></div>
+                        <span class="text-[12px] text-[#FFFFFFDE]">en ligne</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="flex flex-col flex-1 bg-[#F0F0F0] min-h-screen">
+
+            <div
+                class="flex justify-between items-center w-full h-[74px] shadow-md bg-[#FFFFFF] text-[#4D5154] border-b border-[1.33px] border-[#A0A0A033] px-6">
+                <h1 class="font-medium text-[18px]">Dashboard</h1>
+                <div class="flex items-center gap-4">
+                    <div
+                        class="hidden sm:flex relative border border-[#A0A0A033] rounded-full px-4 py-1 items-center gap-2">
+                        <i class="fa-solid fa-magnifying-glass text-[#A0A0A0]"></i>
+                        <input type="search" placeholder="Recherche" class="outline-none text-sm bg-transparent">
+                    </div>
+
+                    <!-- Clochette -->
+                    <div class="relative">
+                        <button id="clochette" onclick="toggleNotifications()" class="relative text-[20px]">
+                            <i class="fa-regular fa-bell"></i>
+                            <span id="compteurNotifications"
+                                class="absolute -top-1 -right-1 text-[9px] rounded text-white bg-[#FCC100] w-[16px] h-[16px] flex items-center justify-center font-bold">0</span>
+                        </button>
+
+                        <div id="panneauNotifications"
+                            class="hidden absolute right-0 top-10 w-[320px] bg-white rounded-xl shadow-lg z-50 overflow-hidden">
+                            <div class="flex justify-between items-center px-4 py-3 border-b border-[#F0F0F0]">
+                                <h3 class="font-semibold text-[15px] text-[#333333]">Notifications</h3>
+                                <div class="flex gap-3">
+                                    <button onclick="marquerToutesLues()"
+                                        class="text-[12px] text-[#8D4B38] hover:underline">Tout lire</button>
+                                    <button onclick="supprimerToutesNotifications()"
+                                        class="text-[12px] text-red-500 hover:underline">Tout supprimer</button>
+                                </div>
+                            </div>
+                            <div id="listeNotifications" class="max-h-[300px] overflow-y-auto">
+                                <p class="text-center text-[#AAAAAA] py-4">Chargement...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Photo profil navbar -->
+                    <button onclick="ouvrirModalProfil()" class="relative w-[38px] h-[38px]">
+                        <div id="photoProfilNav"
+                            class="rounded-full w-full h-full bg-[#45484B] flex items-center justify-center text-white overflow-hidden">
+                            <i class="fa-solid fa-user text-[16px]"></i>
+                        </div>
+                        <span
+                            class="absolute bottom-0 right-0 w-[11px] h-[11px] border-2 border-white rounded-full bg-[#00FF92]"></span>
+                    </button>
+
+                    <a href="#" onclick="deconnexion()"><i
+                            class="fa-solid fa-arrow-right-from-bracket text-[18px]"></i></a>
+                </div>
+            </div>
+
+            <div
+                class="flex flex-col w-full py-4 px-6 shadow-sm bg-[#FFFFFF] border-b border-[1.33px] border-[#A0A0A033] text-[#4D5154]">
+                <h1 class="font-light text-[28px]">Bienvenue sur RED Product</h1>
+                <p class="opacity-60 text-[15px]">Lorem ipsum dolor sit amet consectetur.</p>
+            </div>
+
+            <div class="px-4 py-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+                <div class="w-full h-[106px] bg-[#FFFFFF] shadow-md flex items-center gap-2 rounded-xl">
+                    <div
+                        class="bg-[#9687f5] w-[64px] h-[64px] rounded-full mx-4 flex items-center justify-center text-[22px] text-white">
+                        <i class="fa-solid fa-envelope-open"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-[28px] font-light"><span id="compteurFormulaires">0</span> <span
+                                class="text-[15px]">Formulaires</span></h1>
+                        <p class="opacity-60 text-[14px]">Total des formulaires</p>
+                    </div>
+                </div>
+
+                <div class="w-full h-[106px] bg-[#FFFFFF] shadow-md flex items-center gap-2 rounded-xl">
+                    <div
+                        class="bg-[#0CC2AA] w-[64px] h-[64px] rounded-full mx-4 flex items-center justify-center text-[22px] text-white font-bold">
+                        <i class="fa-solid fa-message"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-[28px] font-light"><span id="compteurMessages">0</span> <span
+                                class="text-[15px]">Messages</span></h1>
+                        <p class="opacity-60 text-[14px]">Total des messages</p>
+                    </div>
+                </div>
+
+                <div class="w-full h-[106px] bg-[#FFFFFF] shadow-md flex items-center gap-2 rounded-xl">
+                    <div
+                        class="bg-[#FCC100] w-[64px] h-[64px] rounded-full mx-4 flex items-center justify-center text-[22px] text-white">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div onclick="ouvrirModalUtilisateurs()" >
+                        <h1 class="text-[28px] font-light"><span id="compteurUtilisateurs">0</span> <span
+                                class="text-[15px]">Utilisateurs</span></h1>
+                        <p class="opacity-60 text-[14px]">Total des utilisateurs</p>
+                    </div>
+                </div>
+
+                <div class="w-full h-[106px] bg-[#FFFFFF] shadow-md flex items-center gap-2 rounded-xl">
+                    <div
+                        class="bg-[#F90000] w-[64px] h-[64px] rounded-full mx-4 flex items-center justify-center text-[22px] text-white">
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-[28px] font-light"><span id="compteurEmails">0</span> <span
+                                class="text-[15px]">E-mails</span></h1>
+                        <p class="opacity-60 text-[14px]">Total des e-mails</p>
+                    </div>
+                </div>
+
+                <div class="w-full h-[106px] bg-[#FFFFFF] shadow-md flex items-center gap-2 rounded-xl">
+                    <div
+                        class="bg-[#9C27B0] w-[64px] h-[64px] rounded-full mx-4 flex items-center justify-center text-[22px] text-white">
+                        <i class="fa-solid fa-hotel"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-[28px] font-light"><span id="compteurHotels">0</span> <span
+                                class="text-[15px]">Hôtels</span></h1>
+                        <p class="opacity-60 text-[14px]">Total des hôtels</p>
+                    </div>
+                </div>
+
+                <div class="w-full h-[106px] bg-[#FFFFFF] shadow-md flex items-center gap-2 rounded-xl">
+                    <div
+                        class="bg-[#1565C0] w-[64px] h-[64px] rounded-full mx-4 flex items-center justify-center text-[22px] text-white">
+                        <i class="fa-solid fa-building"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-[28px] font-light"><span id="compteurEntites">0</span> <span
+                                class="text-[15px]">Entités</span></h1>
+                        <p class="opacity-60 text-[14px]">Total des entités</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Photo Profil -->
+    <div id="modalProfil" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-[400px] p-6">
+            <div class="flex items-center gap-3 pb-4 mb-6 border-b border-dashed border-[#DDDDDD]">
+                <button onclick="fermerModalProfil()" class="text-[#555555] text-[18px] hover:text-black">←</button>
+                <h1 class="font-bold text-[18px] text-[#555555]">PHOTO DE PROFIL</h1>
+            </div>
+            <div class="flex flex-col items-center gap-4">
+                <div id="previewProfil"
+                    class="w-[100px] h-[100px] rounded-full bg-[#45484B] flex items-center justify-center text-white overflow-hidden">
+                    <i class="fa-solid fa-user text-[40px]"></i>
+                </div>
+                <label for="inputPhotoProfil"
+                    class="border border-[#DDDDDD] rounded-xl px-6 py-3 cursor-pointer text-[14px] text-[#555555] hover:bg-[#F0F0F0] transition">
+                    Choisir une photo
+                    <input type="file" id="inputPhotoProfil" class="hidden" accept="image/*">
+                </label>
+            </div>
+            <div class="flex justify-end mt-6">
+                <button onclick="sauvegarderPhoto()"
+                    class="bg-[#333333] text-white px-8 py-3 rounded-xl text-[15px] font-medium hover:bg-[#555555] transition">
+                    Enregistrer
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal Utilisateurs -->
+    <div id="modalUtilisateurs" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-[620px] p-6 max-h-[80vh] overflow-y-auto">
+            <div class="flex items-center gap-3 pb-4 mb-6 border-b border-dashed border-[#DDDDDD]">
+                <button onclick="fermerModalUtilisateurs()"
+                    class="text-[#555555] text-[18px] hover:text-black">←</button>
+                <h1 class="font-bold text-[18px] text-[#555555]">LISTE DES UTILISATEURS</h1>
+            </div>
+            <div id="listeUtilisateurs">
+                <p class="text-center text-[#AAAAAA] py-4">Chargement...</p>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="index.js"></script>
+    <script src="notifications.js"></script>
+    <script src="profil.js"></script>
+
+</body>
+
+</html>
