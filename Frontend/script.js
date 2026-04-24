@@ -1,9 +1,10 @@
 const API_URL = 'http://localhost:5000/api';
+const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
 document.addEventListener('DOMContentLoaded', function () {
 
   // ===== PROTECTION DE LA PAGE =====
-  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+  //const token = localStorage.getItem('token') || sessionStorage.getItem('token');
   if (!token) {
     window.location.href = 'connexion.html';
   }
@@ -21,13 +22,13 @@ document.addEventListener('DOMContentLoaded', function () {
     fetch(`${API_URL}/auth/me`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
-    .then(res => res.json())
-    .then(user => {
-      if (user.nom) {
-        document.getElementById('userNom').textContent = user.nom;
-      }
-    })
-    .catch(() => {});
+      .then(res => res.json())
+      .then(user => {
+        if (user.nom) {
+          document.getElementById('userNom').textContent = user.nom;
+        }
+      })
+      .catch(() => { });
   }
 
   // ===== MENU =====
@@ -250,4 +251,47 @@ document.addEventListener('DOMContentLoaded', function () {
   // Lancer au chargement
   chargerHotels();
 
+  // Fermer le panneau si on clique ailleurs
+  document.addEventListener('click', function (e) {
+    const panel = document.getElementById('panneauNotifications');
+    const bell = document.getElementById('clochette');
+    if (panel && bell && !panel.contains(e.target) && !bell.contains(e.target)) {
+      panel.classList.add('hidden');
+    }
+  });
+
 });
+
+// ===== RECHERCHE HOTELS =====
+function rechercherHotels(query) {
+  const cartes = document.querySelectorAll('#hotels-container > div');
+  const recherche = query.toLowerCase();
+
+  cartes.forEach(carte => {
+    const nom = carte.querySelector('h2').textContent.toLowerCase();
+    const adresse = carte.querySelector('p').textContent.toLowerCase();
+    const prix = carte.querySelector('p:last-child').textContent.toLowerCase();
+
+    if (nom.includes(recherche) || adresse.includes(recherche) || prix.includes(recherche)) {
+      carte.style.display = 'block';
+    } else {
+      carte.style.display = 'none';
+    }
+  });
+
+}
+
+function toggleMenu() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  
+  if (sidebar.classList.contains('hidden')) {
+    sidebar.classList.remove('hidden');
+    sidebar.classList.add('flex', 'flex-col');
+    overlay.classList.remove('hidden');
+  } else {
+    sidebar.classList.add('hidden');
+    sidebar.classList.remove('flex', 'flex-col');
+    overlay.classList.add('hidden');
+  }
+}

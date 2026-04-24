@@ -2,6 +2,7 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { envoyerEmailResetPassword } = require('../utils/email');
+const Notification = require('../models/Notification');
 
 // Inscription
 exports.register = async (req, res) => {
@@ -16,11 +17,19 @@ exports.register = async (req, res) => {
     const hash = await bcrypt.hash(motDePasse, 10);
     const user = await User.create({ nom, email, motDePasse: hash });
 
+    // Créer notification de bienvenue
+    await Notification.create({
+      user: user._id,
+      message: `Bienvenue ${user.nom} sur RED PRODUCT, la plateforme idéale pour gérer vos hôtels !`,
+      type: 'bienvenue'
+    });
+
     res.status(201).json({ message: 'Inscription réussie', user });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // Connexion
 exports.login = async (req, res) => {
@@ -70,6 +79,47 @@ exports.forgotPassword = async (req, res) => {
     await envoyerEmailResetPassword(email);
 
     res.status(200).json({ message: 'Si cet e-mail existe, vous recevrez les instructions sous peu.' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Modifier photo de profil
+exports.updatePhoto = async (req, res) => {
+  try {
+    const { photo } = req.body;
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { photo },
+      { new: true }
+    ).select('-motDePasse');
+    res.status(200).json({ message: 'Photo mise à jour', user });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Stats dashboard
+exports.getStats = async (req, res) => {
+  try {
+    const totalUsers = await User.countDocuments();
+    res.status(200).json({
+      utilisateurs: totalUsers,
+      formulaires: 0,
+      messages: 0,
+      emails: 0,
+      entites: 0
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Obtenir tous les utilisateurs
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select('-motDePasse');
+    res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

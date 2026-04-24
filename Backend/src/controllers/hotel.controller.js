@@ -1,4 +1,5 @@
 const Hotel = require('../models/Hotel');
+const Notification = require('../models/Notification');
 
 // Créer un hôtel
 exports.creerHotel = async (req, res) => {
@@ -8,11 +9,20 @@ exports.creerHotel = async (req, res) => {
       nom, adresse, email, telephone, prixParNuit, devise, photo,
       user: req.user.id
     });
+
+    // Créer notification
+    await Notification.create({
+      user: req.user.id,
+      message: `L'hôtel "${hotel.nom}" a été ajouté avec succès !`,
+      type: 'hotel'
+    });
+
     res.status(201).json({ message: 'Hôtel créé avec succès', hotel });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // Lister les hôtels de l'utilisateur connecté
 exports.getHotels = async (req, res) => {
@@ -44,6 +54,14 @@ exports.modifierHotel = async (req, res) => {
     if (!hotel) {
       return res.status(404).json({ message: 'Hôtel non trouvé' });
     }
+
+    // Notification
+    await Notification.create({
+      user: req.user.id,
+      message: `L'hôtel "${hotel.nom}" a été modifié avec succès !`,
+      type: 'hotel'
+    });
+
     res.status(200).json({ message: 'Hôtel modifié avec succès', hotel });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -57,6 +75,14 @@ exports.supprimerHotel = async (req, res) => {
     if (!hotel) {
       return res.status(404).json({ message: 'Hôtel non trouvé' });
     }
+
+    // Notification
+    await Notification.create({
+      user: req.user.id,
+      message: `L'hôtel "${hotel.nom}" a été supprimé.`,
+      type: 'hotel'
+    });
+
     res.status(200).json({ message: 'Hôtel supprimé avec succès' });
   } catch (error) {
     res.status(500).json({ message: error.message });

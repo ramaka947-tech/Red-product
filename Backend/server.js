@@ -6,6 +6,7 @@ const cors = require('cors');
 const connectDB = require('./src/config/db');
 const authRoutes = require('./src/routes/auth.routes');
 const hotelRoutes = require('./src/routes/hotels.routes');
+const notificationRoutes = require('./src/routes/notification.routes');
 const errorHandler = require('./src/middlewares/error.middleware');
 
 const app = express();
@@ -21,6 +22,7 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/hotels', hotelRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Route de test
 app.get('/', (req, res) => {
