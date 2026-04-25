@@ -24,7 +24,7 @@ const envoyerEmailResetPassword = async (email) => {
         <p>Bonjour,</p>
         <p>Vous avez demandé à réinitialiser votre mot de passe.</p>
         <p>Cliquez sur le bouton ci-dessous pour continuer :</p>
-        <a href="https://red-product-kjmc.onrender.com/Frontend/connexion.html" 
+       <a href="<a href="https://red-product-xi.vercel.app/connexion.html"" 
    style="display: inline-block; background: #45484B; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; margin: 16px 0;">
   Se connecter
 </a>
