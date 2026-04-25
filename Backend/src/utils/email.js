@@ -24,10 +24,10 @@ const envoyerEmailResetPassword = async (email) => {
         <p>Bonjour,</p>
         <p>Vous avez demandé à réinitialiser votre mot de passe.</p>
         <p>Cliquez sur le bouton ci-dessous pour continuer :</p>
-        <a href="http://127.0.0.1:5500/Frontend/connexion.html" 
-           style="display: inline-block; background: #45484B; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; margin: 16px 0;">
-          Réinitialiser mon mot de passe
-        </a>
+        <a href="https://red-product-kjmc.onrender.com/Frontend/connexion.html" 
+   style="display: inline-block; background: #45484B; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; margin: 16px 0;">
+  Se connecter
+</a>
         <p style="color: #999; font-size: 12px;">Si vous n'avez pas fait cette demande, ignorez cet email.</p>
       </div>
     `
