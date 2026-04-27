@@ -1,6 +1,14 @@
 const API_URL = 'https://red-product-kjmc.onrender.com/api';
 const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
+// Empêcher retour arrière après déconnexion
+window.history.pushState(null, '', window.location.href);
+window.addEventListener('popstate', function() {
+  if (!localStorage.getItem('token') && !sessionStorage.getItem('token')) {
+    window.location.href = 'connexion.html';
+  }
+});
+
 // ===== PROTECTION DE LA PAGE =====
 if (!token) {
   window.location.href = 'connexion.html';
@@ -33,6 +41,15 @@ async function chargerStats() {
     const responseStats = await fetch(`${API_URL}/auth/stats`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
+
+    // Dans chargerHotels 
+    if (response.status === 401) {
+      localStorage.removeItem('token');
+      sessionStorage.removeItem('token');
+      window.location.href = 'connexion.html';
+      return;
+    } 
+
     const stats = await responseStats.json();
     document.getElementById('compteurUtilisateurs').textContent = stats.utilisateurs;
     document.getElementById('compteurFormulaires').textContent = stats.formulaires;
@@ -130,12 +147,12 @@ document.addEventListener('DOMContentLoaded', function () {
   fetch(`${API_URL}/auth/me`, {
     headers: { 'Authorization': `Bearer ${token}` }
   })
-  .then(res => res.json())
-  .then(user => {
-    if (user.nom) document.getElementById('userNom').textContent = user.nom;
-    if (user.photo) afficherPhotoProfil(user.photo);
-  })
-  .catch(() => {});
+    .then(res => res.json())
+    .then(user => {
+      if (user.nom) document.getElementById('userNom').textContent = user.nom;
+      if (user.photo) afficherPhotoProfil(user.photo);
+    })
+    .catch(() => { });
 
   // Preview photo avant sauvegarde
   document.getElementById('inputPhotoProfil').addEventListener('change', function (e) {
@@ -165,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
 function toggleMenu() {
   const sidebar = document.getElementById('sidebar');
   const overlay = document.getElementById('overlay');
-  
+
   if (sidebar.classList.contains('hidden')) {
     sidebar.classList.remove('hidden');
     sidebar.classList.add('flex', 'flex-col');

@@ -1,6 +1,14 @@
 const API_URL = 'https://red-product-kjmc.onrender.com/api';
 const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
+// Empêcher retour arrière après déconnexion
+window.history.pushState(null, '', window.location.href);
+window.addEventListener('popstate', function () {
+  if (!localStorage.getItem('token') && !sessionStorage.getItem('token')) {
+    window.location.href = 'connexion.html';
+  }
+}); 
+
 document.addEventListener('DOMContentLoaded', function () {
 
   // ===== PROTECTION DE LA PAGE =====
@@ -86,38 +94,71 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ===== CHARGER LES HOTELS =====
   async function chargerHotels() {
+    const container = document.getElementById('hotels-container');
+    container.innerHTML = '<div class="loader-hotels"></div>';
+
     try {
       const response = await fetch(`${API_URL}/hotels`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const hotels = await response.json();
 
-      const container = document.getElementById('hotels-container');
       container.innerHTML = '';
-
       document.getElementById('compteurHotels').textContent = hotels.length;
+
+      if (hotels.length === 0) {
+        container.innerHTML = '<p class="text-center text-[#AAAAAA] py-10 col-span-4">Aucun hôtel pour le moment</p>';
+        return;
+      }
+
+      // Dans chargerHotels
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        sessionStorage.removeItem('token');
+        window.location.href = 'connexion.html';
+        return;
+      }
+
+      // Trier par date de création (dernier en haut)
+      hotels.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
       hotels.forEach(hotel => {
         const carte = document.createElement('div');
         carte.classList.add('bg-white', 'rounded-xl', 'overflow-hidden', 'shadow-sm');
         carte.style.cursor = 'pointer';
         carte.innerHTML = `
-          <img src="${hotel.photo || 'https://placehold.co/400x200?text=Hotel'}" 
-               class="w-full h-[180px] object-cover">
-          <div class="p-3">
-            <p class="text-[#8D4B38] text-[12px]">${hotel.adresse}</p>
-            <h2 class="font-semibold text-[16px]">${hotel.nom}</h2>
-            <p class="text-[13px] text-[#555555]">${Number(hotel.prixParNuit).toLocaleString('fr-FR')} ${hotel.devise.toUpperCase()} par nuit</p>
-          </div>
-        `;
+        <img src="${hotel.photo || 'https://placehold.co/400x200?text=Hotel'}" 
+             class="w-full h-[180px] object-cover">
+        <div class="p-3">
+          <p class="text-[#8D4B38] text-[12px]">${hotel.adresse}</p>
+          <h2 class="font-semibold text-[16px]">${hotel.nom}</h2>
+          <p class="text-[13px] text-[#555555]">${Number(hotel.prixParNuit).toLocaleString('fr-FR')} ${hotel.devise.toUpperCase()} par nuit</p>
+        </div>
+      `;
         carte.addEventListener('click', () => ouvrirModalDetails(hotel));
         container.appendChild(carte);
       });
 
     } catch (error) {
+      container.innerHTML = '<p class="text-center text-red-500 py-10 col-span-4">Erreur de chargement</p>';
       console.error('Erreur chargement hôtels:', error);
     }
+
+    // Preview image hotel
+    document.getElementById('photo').addEventListener('change', function (e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const preview = document.getElementById('previewHotelPhoto');
+        preview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+      };
+      reader.readAsDataURL(file);
+    });
+
+
   }
+
 
   // ===== CONVERTIR IMAGE EN BASE64 =====
   function convertirEnBase64(file) {
@@ -133,29 +174,36 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('hotelForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
+    // Validation des champs
+    const nom = document.getElementById('nom').value.trim();
+    const adresse = document.getElementById('adresse').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const telephone = document.getElementById('telephone').value.trim();
+    const prixParNuit = document.getElementById('prixParNuit').value;
+
+    if (!nom) return afficherErreur('nom', 'Le nom est obligatoire');
+    if (!adresse) return afficherErreur('adresse', "L'adresse est obligatoire");
+    if (!email || !email.includes('@')) return afficherErreur('email', 'Email invalide');
+    if (!telephone) return afficherErreur('telephone', 'Le téléphone est obligatoire');
+    if (!prixParNuit || prixParNuit <= 0) return afficherErreur('prixParNuit', 'Le prix doit être supérieur à 0');
+
+    const btn = this.querySelector('button[type="submit"]');
+    const btnText = btn.textContent;
+    btn.classList.add('btn-loader');
+    btn.textContent = 'Enregistrement...';
+
     const photoFile = document.getElementById('photo').files[0];
     let photoBase64 = '';
     if (photoFile) {
       photoBase64 = await convertirEnBase64(photoFile);
     }
 
-    const data = {
-      nom: document.getElementById('nom').value,
-      adresse: document.getElementById('adresse').value,
-      email: document.getElementById('email').value,
-      telephone: document.getElementById('telephone').value,
-      prixParNuit: document.getElementById('prixParNuit').value,
-      devise: document.getElementById('devise').value,
-      photo: photoBase64
-    };
+    const data = { nom, adresse, email, telephone, prixParNuit, devise: document.getElementById('devise').value, photo: photoBase64 };
 
     try {
       const response = await fetch(`${API_URL}/hotels`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify(data)
       });
 
@@ -169,8 +217,30 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     } catch (error) {
       console.error('Erreur création hôtel:', error);
+    } finally {
+      btn.classList.remove('btn-loader');
+      btn.textContent = btnText;
     }
   });
+
+  // Fonction afficher erreur
+  function afficherErreur(fieldId, message) {
+    const field = document.getElementById(fieldId);
+    field.classList.add('border-red-500');
+
+    let errDiv = field.parentElement.querySelector('.err-msg');
+    if (!errDiv) {
+      errDiv = document.createElement('p');
+      errDiv.classList.add('err-msg', 'text-red-500', 'text-[12px]', 'mt-1');
+      field.parentElement.appendChild(errDiv);
+    }
+    errDiv.textContent = message;
+
+    field.addEventListener('input', () => {
+      field.classList.remove('border-red-500');
+      errDiv.remove();
+    }, { once: true });
+  }
 
   // ===== MODAL MODIFIER =====
   function ouvrirModalModifier(id, nom, adresse, email, telephone, prix, devise) {
@@ -284,7 +354,7 @@ function rechercherHotels(query) {
 function toggleMenu() {
   const sidebar = document.getElementById('sidebar');
   const overlay = document.getElementById('overlay');
-  
+
   if (sidebar.classList.contains('hidden')) {
     sidebar.classList.remove('hidden');
     sidebar.classList.add('flex', 'flex-col');
