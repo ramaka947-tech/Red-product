@@ -1,15 +1,21 @@
 document.getElementById('passwordForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    const email = document.getElementById('email').value;
+    const btn = this.querySelector('button[type="submit"]');
+    const btnText = btn.textContent;
+    const email = document.getElementById('email').value.trim();
     const msgDiv = document.getElementById('message');
 
-    if (!email) {
-        msgDiv.textContent = 'Veuillez entrer votre adresse e-mail.';
+    if (!email || !email.includes('@')) {
+        msgDiv.textContent = 'Veuillez entrer un email valide.';
         msgDiv.classList.remove('hidden', 'text-green-600');
         msgDiv.classList.add('text-red-500');
         return;
     }
+
+    btn.classList.add('btn-loader');
+    btn.textContent = 'Envoi en cours...';
+    msgDiv.classList.add('hidden');
 
     try {
         const response = await fetch('https://red-product-kjmc.onrender.com/api/auth/forgot-password', {
@@ -29,5 +35,8 @@ document.getElementById('passwordForm').addEventListener('submit', async functio
         msgDiv.textContent = 'Erreur de connexion au serveur.';
         msgDiv.classList.remove('hidden', 'text-green-600');
         msgDiv.classList.add('text-red-500');
+    } finally {
+        btn.classList.remove('btn-loader');
+        btn.textContent = btnText;
     }
 });
