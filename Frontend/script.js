@@ -1,50 +1,100 @@
 const API_URL = 'https://red-product-kjmc.onrender.com/api';
-const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+const token = sessionStorage.getItem('token');
+
+// ===== PROTECTION DE LA PAGE =====
+if (!token) {
+  window.location.href = 'connexion.html';
+}
+
+// ===== DECONNEXION =====
+function deconnexion() {
+  sessionStorage.removeItem('token');
+  window.location.href = 'connexion.html';
+}
+window.deconnexion = deconnexion;
 
 // Empêcher retour arrière après déconnexion
 window.history.pushState(null, '', window.location.href);
 window.addEventListener('popstate', function () {
-  if (!localStorage.getItem('token') && !sessionStorage.getItem('token')) {
+  if (!sessionStorage.getItem('token')) {
     window.location.href = 'connexion.html';
   }
-}); 
+});
+
+// ===== MENU =====
+function toggleMenu() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+
+  if (sidebar.classList.contains('hidden')) {
+    sidebar.classList.remove('hidden');
+    sidebar.classList.add('flex', 'flex-col');
+    overlay.classList.remove('hidden');
+  } else {
+    sidebar.classList.add('hidden');
+    sidebar.classList.remove('flex', 'flex-col');
+    overlay.classList.add('hidden');
+  }
+}
+
+// ===== RECHERCHE HOTELS =====
+function rechercherHotels(query) {
+  const cartes = document.querySelectorAll('#hotels-container > div');
+  const recherche = query.toLowerCase();
+
+  cartes.forEach(carte => {
+    const nom = carte.querySelector('h2').textContent.toLowerCase();
+    const adresse = carte.querySelector('p').textContent.toLowerCase();
+    const prix = carte.querySelector('p:last-child').textContent.toLowerCase();
+
+    if (nom.includes(recherche) || adresse.includes(recherche) || prix.includes(recherche)) {
+      carte.style.display = 'block';
+    } else {
+      carte.style.display = 'none';
+    }
+  });
+}
+
+// ===== CONVERTIR IMAGE EN BASE64 =====
+function convertirEnBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+}
+
+// Fonction afficher erreur
+function afficherErreur(fieldId, message) {
+  const field = document.getElementById(fieldId);
+  field.classList.add('border-red-500');
+
+  let errDiv = field.parentElement.querySelector('.err-msg');
+  if (!errDiv) {
+    errDiv = document.createElement('p');
+    errDiv.classList.add('err-msg', 'text-red-500', 'text-[12px]', 'mt-1');
+    field.parentElement.appendChild(errDiv);
+  }
+  errDiv.textContent = message;
+
+  field.addEventListener('input', () => {
+    field.classList.remove('border-red-500');
+    errDiv.remove();
+  }, { once: true });
+}
 
 document.addEventListener('DOMContentLoaded', function () {
 
-  // ===== PROTECTION DE LA PAGE =====
-  //const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-  if (!token) {
-    window.location.href = 'connexion.html';
-  }
-
-  // ===== DECONNEXION =====
-  function deconnexion() {
-    localStorage.removeItem('token');
-    sessionStorage.removeItem('token');
-    window.location.href = 'connexion.html';
-  }
-  window.deconnexion = deconnexion;
-
   // ===== AFFICHER UTILISATEUR =====
-  if (token) {
-    fetch(`${API_URL}/auth/me`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-      .then(res => res.json())
-      .then(user => {
-        if (user.nom) {
-          document.getElementById('userNom').textContent = user.nom;
-        }
-      })
-      .catch(() => { });
-  }
-
-  // ===== MENU =====
-  function toggleMenu() {
-    const sidebar = document.getElementById('sidebar');
-    sidebar.classList.toggle('hidden');
-  }
-  window.toggleMenu = toggleMenu;
+  fetch(`${API_URL}/auth/me`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+  .then(res => res.json())
+  .then(user => {
+    if (user.nom) document.getElementById('userNom').textContent = user.nom;
+  })
+  .catch(() => {});
 
   // ===== MODAL CREER =====
   function openModal() {
@@ -56,11 +106,30 @@ document.addEventListener('DOMContentLoaded', function () {
   function closeModal() {
     document.getElementById('modalOverlay').classList.add('hidden');
     document.body.style.overflow = '';
+    document.getElementById('hotelForm').reset();
+    document.getElementById('previewHotelPhoto').innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 mb-2 text-[#CCCCCC]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+      <span class="text-[13px]">Ajouter une photo</span>
+    `;
   }
   window.closeModal = closeModal;
 
   document.getElementById('modalOverlay').addEventListener('click', function (e) {
     if (e.target === this) closeModal();
+  });
+
+  // ===== PREVIEW IMAGE HOTEL =====
+  document.getElementById('photo').addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const preview = document.getElementById('previewHotelPhoto');
+      preview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+    };
+    reader.readAsDataURL(file);
   });
 
   // ===== MODAL DETAILS =====
@@ -101,8 +170,14 @@ document.addEventListener('DOMContentLoaded', function () {
       const response = await fetch(`${API_URL}/hotels`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      const hotels = await response.json();
 
+      if (response.status === 401) {
+        sessionStorage.removeItem('token');
+        window.location.href = 'connexion.html';
+        return;
+      }
+
+      const hotels = await response.json();
       container.innerHTML = '';
       document.getElementById('compteurHotels').textContent = hotels.length;
 
@@ -111,15 +186,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
       }
 
-      // Dans chargerHotels
-      if (response.status === 401) {
-        localStorage.removeItem('token');
-        sessionStorage.removeItem('token');
-        window.location.href = 'connexion.html';
-        return;
-      }
-
-      // Trier par date de création (dernier en haut)
       hotels.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
       hotels.forEach(hotel => {
@@ -127,14 +193,14 @@ document.addEventListener('DOMContentLoaded', function () {
         carte.classList.add('bg-white', 'rounded-xl', 'overflow-hidden', 'shadow-sm');
         carte.style.cursor = 'pointer';
         carte.innerHTML = `
-        <img src="${hotel.photo || 'https://placehold.co/400x200?text=Hotel'}" 
-             class="w-full h-[180px] object-cover">
-        <div class="p-3">
-          <p class="text-[#8D4B38] text-[12px]">${hotel.adresse}</p>
-          <h2 class="font-semibold text-[16px]">${hotel.nom}</h2>
-          <p class="text-[13px] text-[#555555]">${Number(hotel.prixParNuit).toLocaleString('fr-FR')} ${hotel.devise.toUpperCase()} par nuit</p>
-        </div>
-      `;
+          <img src="${hotel.photo || 'https://placehold.co/400x200?text=Hotel'}" 
+               class="w-full h-[180px] object-cover">
+          <div class="p-3">
+            <p class="text-[#8D4B38] text-[12px]">${hotel.adresse}</p>
+            <h2 class="font-semibold text-[16px]">${hotel.nom}</h2>
+            <p class="text-[13px] text-[#555555]">${Number(hotel.prixParNuit).toLocaleString('fr-FR')} ${hotel.devise.toUpperCase()} par nuit</p>
+          </div>
+        `;
         carte.addEventListener('click', () => ouvrirModalDetails(hotel));
         container.appendChild(carte);
       });
@@ -143,38 +209,12 @@ document.addEventListener('DOMContentLoaded', function () {
       container.innerHTML = '<p class="text-center text-red-500 py-10 col-span-4">Erreur de chargement</p>';
       console.error('Erreur chargement hôtels:', error);
     }
-
-    // Preview image hotel
-    document.getElementById('photo').addEventListener('change', function (e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const preview = document.getElementById('previewHotelPhoto');
-        preview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
-      };
-      reader.readAsDataURL(file);
-    });
-
-
-  }
-
-
-  // ===== CONVERTIR IMAGE EN BASE64 =====
-  function convertirEnBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = error => reject(error);
-    });
   }
 
   // ===== CREER UN HOTEL =====
   document.getElementById('hotelForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    // Validation des champs
     const nom = document.getElementById('nom').value.trim();
     const adresse = document.getElementById('adresse').value.trim();
     const email = document.getElementById('email').value.trim();
@@ -210,7 +250,6 @@ document.addEventListener('DOMContentLoaded', function () {
       const result = await response.json();
       if (response.ok) {
         closeModal();
-        document.getElementById('hotelForm').reset();
         chargerHotels();
       } else {
         alert(result.message);
@@ -222,25 +261,6 @@ document.addEventListener('DOMContentLoaded', function () {
       btn.textContent = btnText;
     }
   });
-
-  // Fonction afficher erreur
-  function afficherErreur(fieldId, message) {
-    const field = document.getElementById(fieldId);
-    field.classList.add('border-red-500');
-
-    let errDiv = field.parentElement.querySelector('.err-msg');
-    if (!errDiv) {
-      errDiv = document.createElement('p');
-      errDiv.classList.add('err-msg', 'text-red-500', 'text-[12px]', 'mt-1');
-      field.parentElement.appendChild(errDiv);
-    }
-    errDiv.textContent = message;
-
-    field.addEventListener('input', () => {
-      field.classList.remove('border-red-500');
-      errDiv.remove();
-    }, { once: true });
-  }
 
   // ===== MODAL MODIFIER =====
   function ouvrirModalModifier(id, nom, adresse, email, telephone, prix, devise) {
@@ -265,8 +285,12 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('editForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    const id = document.getElementById('editId').value;
+    const btn = this.querySelector('button[type="submit"]');
+    const btnText = btn.textContent;
+    btn.classList.add('btn-loader');
+    btn.textContent = 'Modification...';
 
+    const id = document.getElementById('editId').value;
     const data = {
       nom: document.getElementById('editNom').value,
       adresse: document.getElementById('editAdresse').value,
@@ -279,10 +303,7 @@ document.addEventListener('DOMContentLoaded', function () {
     try {
       const response = await fetch(`${API_URL}/hotels/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify(data)
       });
 
@@ -294,6 +315,9 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     } catch (error) {
       console.error('Erreur modification:', error);
+    } finally {
+      btn.classList.remove('btn-loader');
+      btn.textContent = btnText;
     }
   });
 
@@ -318,10 +342,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   window.supprimerHotel = supprimerHotel;
 
-  // Lancer au chargement
-  chargerHotels();
-
-  // Fermer le panneau si on clique ailleurs
+  // Fermer panneau notifications si clic ailleurs
   document.addEventListener('click', function (e) {
     const panel = document.getElementById('panneauNotifications');
     const bell = document.getElementById('clochette');
@@ -330,38 +351,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
+  chargerHotels();
+  chargerNotifications();
+
 });
-
-// ===== RECHERCHE HOTELS =====
-function rechercherHotels(query) {
-  const cartes = document.querySelectorAll('#hotels-container > div');
-  const recherche = query.toLowerCase();
-
-  cartes.forEach(carte => {
-    const nom = carte.querySelector('h2').textContent.toLowerCase();
-    const adresse = carte.querySelector('p').textContent.toLowerCase();
-    const prix = carte.querySelector('p:last-child').textContent.toLowerCase();
-
-    if (nom.includes(recherche) || adresse.includes(recherche) || prix.includes(recherche)) {
-      carte.style.display = 'block';
-    } else {
-      carte.style.display = 'none';
-    }
-  });
-
-}
-
-function toggleMenu() {
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('overlay');
-
-  if (sidebar.classList.contains('hidden')) {
-    sidebar.classList.remove('hidden');
-    sidebar.classList.add('flex', 'flex-col');
-    overlay.classList.remove('hidden');
-  } else {
-    sidebar.classList.add('hidden');
-    sidebar.classList.remove('flex', 'flex-col');
-    overlay.classList.add('hidden');
-  }
-}

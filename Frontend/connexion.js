@@ -19,7 +19,6 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
       const result = await response.json();
 
       if (response.ok) {
-        localStorage.setItem('token', result.token);
         sessionStorage.setItem('token', result.token);
         window.location.href = 'index.html';
       } else {

@@ -26,6 +26,11 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 // Servir les fichiers statiques du Frontend
 app.use(express.static(path.join(__dirname, '../Frontend')));
 
+// Route principale → connexion
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../Frontend/connexion.html'));
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/hotels', hotelRoutes);

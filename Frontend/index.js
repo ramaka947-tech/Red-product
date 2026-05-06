@@ -1,25 +1,22 @@
 const API_URL = 'https://red-product-kjmc.onrender.com/api';
-const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+const token = sessionStorage.getItem('token');
 
 // ===== PROTECTION DE LA PAGE =====
 if (!token) {
   window.location.href = 'connexion.html';
 }
 
-// ===== DECONNEXION SECURISEE =====
+// ===== DECONNEXION =====
 function deconnexion() {
-  localStorage.removeItem('token');
   sessionStorage.removeItem('token');
-  // Empêcher le retour arrière vers le dashboard
-  history.pushState(null, null, 'connexion.html');
-  window.location.replace('connexion.html');
+  window.location.href = 'connexion.html';
 }
 
-// Bloquer le bouton retour après déconnexion
+// Empêcher retour arrière après déconnexion
+window.history.pushState(null, '', window.location.href);
 window.addEventListener('popstate', function () {
-  const t = localStorage.getItem('token') || sessionStorage.getItem('token');
-  if (!t) {
-    window.location.replace('connexion.html');
+  if (!sessionStorage.getItem('token')) {
+    window.location.href = 'connexion.html';
   }
 });
 
@@ -55,6 +52,13 @@ async function chargerStats() {
     const responseHotels = await fetch(`${API_URL}/hotels`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
+
+    if (responseHotels.status === 401) {
+      sessionStorage.removeItem('token');
+      window.location.href = 'connexion.html';
+      return;
+    }
+
     const hotels = await responseHotels.json();
     document.getElementById('compteurHotels').textContent = hotels.length;
 
@@ -123,9 +127,12 @@ function fermerModalProfil() {
 
 function afficherPhotoProfil(photo) {
   const imgTag = `<img src="${photo}" class="w-full h-full object-cover rounded-full">`;
-  document.getElementById('photoProfilNav').innerHTML = imgTag;
-  document.getElementById('photoProfilSidebar').innerHTML = imgTag;
-  document.getElementById('previewProfil').innerHTML = imgTag;
+  const nav = document.getElementById('photoProfilNav');
+  const sidebar = document.getElementById('photoProfilSidebar');
+  const preview = document.getElementById('previewProfil');
+  if (nav) nav.innerHTML = imgTag;
+  if (sidebar) sidebar.innerHTML = imgTag;
+  if (preview) preview.innerHTML = imgTag;
 }
 
 async function sauvegarderPhoto() {
@@ -137,16 +144,13 @@ async function sauvegarderPhoto() {
   const btn = document.querySelector('#modalProfil button[onclick="sauvegarderPhoto()"]');
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = '<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>Enregistrement...';
+    btn.textContent = 'Enregistrement...';
   }
 
   try {
     const response = await fetch(`${API_URL}/auth/update-photo`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ photo: photoBase64 })
     });
 
@@ -162,7 +166,7 @@ async function sauvegarderPhoto() {
   } finally {
     if (btn) {
       btn.disabled = false;
-      btn.innerHTML = 'Enregistrer';
+      btn.textContent = 'Enregistrer';
     }
   }
 }
@@ -181,7 +185,6 @@ async function ouvrirModalUtilisateurs() {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     const users = await response.json();
-
     liste.innerHTML = '';
 
     if (users.length === 0) {
