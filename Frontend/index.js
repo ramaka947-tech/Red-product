@@ -1,64 +1,80 @@
 const API_URL = 'https://red-product-kjmc.onrender.com/api';
 const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
-// Empêcher retour arrière après déconnexion
-window.history.pushState(null, '', window.location.href);
-window.addEventListener('popstate', function() {
-  if (!localStorage.getItem('token') && !sessionStorage.getItem('token')) {
-    window.location.href = 'connexion.html';
-  }
-});
-
 // ===== PROTECTION DE LA PAGE =====
 if (!token) {
   window.location.href = 'connexion.html';
 }
 
-// ===== DECONNEXION =====
+// ===== DECONNEXION SECURISEE =====
 function deconnexion() {
   localStorage.removeItem('token');
   sessionStorage.removeItem('token');
-  window.location.href = 'connexion.html';
+  // Empêcher le retour arrière vers le dashboard
+  history.pushState(null, null, 'connexion.html');
+  window.location.replace('connexion.html');
 }
+
+// Bloquer le bouton retour après déconnexion
+window.addEventListener('popstate', function () {
+  const t = localStorage.getItem('token') || sessionStorage.getItem('token');
+  if (!t) {
+    window.location.replace('connexion.html');
+  }
+});
 
 // ===== MENU =====
 function toggleMenu() {
   const sidebar = document.getElementById('sidebar');
-  sidebar.classList.toggle('hidden');
+  const overlay = document.getElementById('overlay');
+
+  if (sidebar.classList.contains('hidden')) {
+    sidebar.classList.remove('hidden');
+    sidebar.classList.add('flex', 'flex-col');
+    overlay.classList.remove('hidden');
+  } else {
+    sidebar.classList.add('hidden');
+    sidebar.classList.remove('flex', 'flex-col');
+    overlay.classList.add('hidden');
+  }
+}
+
+// ===== LOADER STATS =====
+function afficherLoaderStats() {
+  const ids = ['compteurHotels', 'compteurUtilisateurs', 'compteurFormulaires', 'compteurMessages', 'compteurEmails', 'compteurEntites'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = '<span class="inline-block w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></span>';
+  });
 }
 
 // ===== CHARGER STATS =====
 async function chargerStats() {
+  afficherLoaderStats();
   try {
-    // Stats hotels
     const responseHotels = await fetch(`${API_URL}/hotels`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     const hotels = await responseHotels.json();
     document.getElementById('compteurHotels').textContent = hotels.length;
 
-    // Stats générales
     const responseStats = await fetch(`${API_URL}/auth/stats`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
-
-    // Dans chargerHotels 
-    if (response.status === 401) {
-      localStorage.removeItem('token');
-      sessionStorage.removeItem('token');
-      window.location.href = 'connexion.html';
-      return;
-    } 
-
     const stats = await responseStats.json();
-    document.getElementById('compteurUtilisateurs').textContent = stats.utilisateurs;
-    document.getElementById('compteurFormulaires').textContent = stats.formulaires;
-    document.getElementById('compteurMessages').textContent = stats.messages;
-    document.getElementById('compteurEmails').textContent = stats.emails;
-    document.getElementById('compteurEntites').textContent = stats.entites;
+    document.getElementById('compteurUtilisateurs').textContent = stats.utilisateurs ?? 0;
+    document.getElementById('compteurFormulaires').textContent = stats.formulaires ?? 0;
+    document.getElementById('compteurMessages').textContent = stats.messages ?? 0;
+    document.getElementById('compteurEmails').textContent = stats.emails ?? 0;
+    document.getElementById('compteurEntites').textContent = stats.entites ?? 0;
 
   } catch (error) {
     console.error('Erreur stats:', error);
+    const ids = ['compteurHotels', 'compteurUtilisateurs', 'compteurFormulaires', 'compteurMessages', 'compteurEmails', 'compteurEntites'];
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = '0';
+    });
   }
 }
 
@@ -118,6 +134,12 @@ async function sauvegarderPhoto() {
     return;
   }
 
+  const btn = document.querySelector('#modalProfil button[onclick="sauvegarderPhoto()"]');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>Enregistrement...';
+  }
+
   try {
     const response = await fetch(`${API_URL}/auth/update-photo`, {
       method: 'PUT',
@@ -137,66 +159,22 @@ async function sauvegarderPhoto() {
     }
   } catch (error) {
     console.error('Erreur photo:', error);
-  }
-}
-
-// ===== INITIALISATION =====
-document.addEventListener('DOMContentLoaded', function () {
-
-  // Charger utilisateur + photo
-  fetch(`${API_URL}/auth/me`, {
-    headers: { 'Authorization': `Bearer ${token}` }
-  })
-    .then(res => res.json())
-    .then(user => {
-      if (user.nom) document.getElementById('userNom').textContent = user.nom;
-      if (user.photo) afficherPhotoProfil(user.photo);
-    })
-    .catch(() => { });
-
-  // Preview photo avant sauvegarde
-  document.getElementById('inputPhotoProfil').addEventListener('change', function (e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      photoBase64 = e.target.result;
-      document.getElementById('previewProfil').innerHTML = `<img src="${photoBase64}" class="w-full h-full object-cover rounded-full">`;
-    };
-    reader.readAsDataURL(file);
-  });
-
-  // Fermer panneau notifications si clic ailleurs
-  document.addEventListener('click', function (e) {
-    const panel = document.getElementById('panneauNotifications');
-    const bell = document.getElementById('clochette');
-    if (panel && bell && !panel.contains(e.target) && !bell.contains(e.target)) {
-      panel.classList.add('hidden');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = 'Enregistrer';
     }
-  });
-
-  chargerStats();
-  chargerNotifications();
-});
-
-function toggleMenu() {
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('overlay');
-
-  if (sidebar.classList.contains('hidden')) {
-    sidebar.classList.remove('hidden');
-    sidebar.classList.add('flex', 'flex-col');
-    overlay.classList.remove('hidden');
-  } else {
-    sidebar.classList.add('hidden');
-    sidebar.classList.remove('flex', 'flex-col');
-    overlay.classList.add('hidden');
   }
 }
 
 // ===== MODAL UTILISATEURS =====
 async function ouvrirModalUtilisateurs() {
   document.getElementById('modalUtilisateurs').classList.remove('hidden');
+  const liste = document.getElementById('listeUtilisateurs');
+  liste.innerHTML = `
+    <div class="flex justify-center py-8">
+      <span class="inline-block w-8 h-8 border-4 border-gray-300 border-t-gray-600 rounded-full animate-spin"></span>
+    </div>`;
 
   try {
     const response = await fetch(`${API_URL}/auth/users`, {
@@ -204,7 +182,6 @@ async function ouvrirModalUtilisateurs() {
     });
     const users = await response.json();
 
-    const liste = document.getElementById('listeUtilisateurs');
     liste.innerHTML = '';
 
     if (users.length === 0) {
@@ -231,6 +208,7 @@ async function ouvrirModalUtilisateurs() {
     });
 
   } catch (error) {
+    liste.innerHTML = '<p class="text-center text-red-400 py-4">Erreur de chargement</p>';
     console.error('Erreur utilisateurs:', error);
   }
 }
@@ -238,3 +216,39 @@ async function ouvrirModalUtilisateurs() {
 function fermerModalUtilisateurs() {
   document.getElementById('modalUtilisateurs').classList.add('hidden');
 }
+
+// ===== INITIALISATION =====
+document.addEventListener('DOMContentLoaded', function () {
+
+  fetch(`${API_URL}/auth/me`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+  .then(res => res.json())
+  .then(user => {
+    if (user.nom) document.getElementById('userNom').textContent = user.nom;
+    if (user.photo) afficherPhotoProfil(user.photo);
+  })
+  .catch(() => {});
+
+  document.getElementById('inputPhotoProfil').addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      photoBase64 = e.target.result;
+      document.getElementById('previewProfil').innerHTML = `<img src="${photoBase64}" class="w-full h-full object-cover rounded-full">`;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  document.addEventListener('click', function (e) {
+    const panel = document.getElementById('panneauNotifications');
+    const bell = document.getElementById('clochette');
+    if (panel && bell && !panel.contains(e.target) && !bell.contains(e.target)) {
+      panel.classList.add('hidden');
+    }
+  });
+
+  chargerStats();
+  chargerNotifications();
+});
