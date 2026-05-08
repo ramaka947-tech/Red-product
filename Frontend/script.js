@@ -9,7 +9,7 @@ if (!token) {
 // ===== DECONNEXION =====
 function deconnexion() {
   sessionStorage.removeItem('token');
-  window.location.href = 'connexion.html';
+  window.location.replace('connexion.html');
 }
 window.deconnexion = deconnexion;
 

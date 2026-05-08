@@ -1,11 +1,6 @@
 const API_URL = 'https://red-product-kjmc.onrender.com/api';
 const token = sessionStorage.getItem('token');
 
-// Déconnexion quand on quitte la fenêtre
-window.addEventListener('pagehide', function () {
-  sessionStorage.removeItem('token');
-});
-
 // ===== PROTECTION DE LA PAGE =====
 if (!token) {
   window.location.href = 'connexion.html';
