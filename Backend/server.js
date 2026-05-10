@@ -41,9 +41,6 @@ app.use((req, res, next) => {
 // Servir les fichiers statiques du Frontend
 app.use(express.static(path.join(__dirname, '../Frontend')));
 
-// Servir les fichiers statiques du Frontend
-app.use(express.static(path.join(__dirname, '../Frontend')));
-
 // Route principale → connexion
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../Frontend/connexion.html'));
