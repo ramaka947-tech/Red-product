@@ -12,6 +12,16 @@ function deconnexion() {
   window.location.href = 'connexion.html';
 }
 
+// Bloquer le bfcache
+window.addEventListener('pageshow', function(event) {
+  if (event.persisted) {
+    // Page chargée depuis le cache navigateur
+    if (!sessionStorage.getItem('token')) {
+      window.location.replace('connexion.html');
+    }
+  }
+});
+
 // Empêcher retour arrière après déconnexion
 window.history.pushState(null, '', window.location.href);
 window.addEventListener('popstate', function () {
