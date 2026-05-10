@@ -28,6 +28,19 @@ app.use('/api/auth', authRoutes);
 app.use('/api/hotels', hotelRoutes);
 app.use('/api/notifications', notificationRoutes);
 
+// Désactiver le cache pour les fichiers HTML
+app.use((req, res, next) => {
+  if (req.url.endsWith('.html') || req.url === '/') {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+  }
+  next();
+});
+
+// Servir les fichiers statiques du Frontend
+app.use(express.static(path.join(__dirname, '../Frontend')));
+
 // Servir les fichiers statiques du Frontend
 app.use(express.static(path.join(__dirname, '../Frontend')));
 
