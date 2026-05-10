@@ -7,6 +7,11 @@
     <title>Connexion</title>
     <link rel="stylesheet" href="loader.css">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script>
+  if (sessionStorage.getItem('token')) {
+    window.location.replace('index.html');
+  }
+</script>
 </head>
 
 <body class="bg-[#494C4F] min-h-screen flex justify-center items-center px-4 py-8">
