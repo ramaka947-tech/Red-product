@@ -22,6 +22,14 @@ const userSchema = new mongoose.Schema({
   photo: {
     type: String,
     default: ''
+  },
+  estActif: {
+    type: Boolean,
+    default: false
+  },
+  tokenActivation: {
+    type: String,
+    default: ''
   }
 }, { timestamps: true });
 
