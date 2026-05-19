@@ -50,7 +50,8 @@ document.getElementById('registerForm').addEventListener('submit', async functio
         const result = await response.json();
 
         if (response.ok) {
-            window.location.href = 'connexion.html';
+            // Afficher modal succès
+            document.getElementById('modalSucces').classList.remove('hidden');
         } else {
             errorMsg.textContent = result.message;
             errorMsg.classList.remove('hidden');
