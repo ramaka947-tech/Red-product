@@ -1,22 +1,19 @@
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
+  host: 'smtp-relay.brevo.com',
   port: 587,
   secure: false,
   auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_PASS
-  },
-  tls: {
-    rejectUnauthorized: false
+    user: process.env.BREVO_USER,
+    pass: process.env.BREVO_PASS
   }
 });
 
 // ===== EMAIL RESET MOT DE PASSE =====
 const envoyerEmailResetPassword = async (email) => {
   const mailOptions = {
-    from: `"RED PRODUCT" <${process.env.GMAIL_USER}>`,
+    from: '"RED PRODUCT" <abcaf5001@smtp-brevo.com>',
     to: email,
     subject: 'Réinitialisation de votre mot de passe',
     html: `
@@ -43,7 +40,7 @@ const envoyerEmailActivation = async (email, nom, token) => {
   const lienActivation = `https://red-product-kjmc.onrender.com/api/auth/activer/${token}`;
 
   const mailOptions = {
-    from: `"RED PRODUCT" <${process.env.GMAIL_USER}>`,
+    from: '"RED PRODUCT" <abcaf5001@smtp-brevo.com>',
     to: email,
     subject: 'Activez votre compte RED PRODUCT',
     html: `
