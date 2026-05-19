@@ -1,65 +1,36 @@
-const nodemailer = require('nodemailer');
+const fetch = require('node-fetch');
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp-relay.brevo.com',
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.BREVO_USER,
-    pass: process.env.BREVO_PASS
-  }
-});
-
-// ===== EMAIL RESET MOT DE PASSE =====
 const envoyerEmailResetPassword = async (email) => {
-  const mailOptions = {
-    from: '"RED PRODUCT" <abcaf5001@smtp-brevo.com>',
-    to: email,
-    subject: 'Réinitialisation de votre mot de passe',
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; background: #f0f0f0; border-radius: 10px;">
-        <h2 style="color: #45484B;">RED PRODUCT</h2>
-        <p>Bonjour,</p>
-        <p>Vous avez demandé à réinitialiser votre mot de passe.</p>
-        <p>Cliquez sur le bouton ci-dessous pour continuer :</p>
-        <a href="https://red-product-xi.vercel.app/connexion.html" 
-           target="_blank"
-           style="display: inline-block; background: #45484B; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; margin: 16px 0; cursor: pointer;">
-          Se connecter
-        </a>
-        <p style="color: #999; font-size: 12px;">Si vous n'avez pas fait cette demande, ignorez cet email.</p>
-      </div>
-    `
-  };
-
-  await transporter.sendMail(mailOptions);
+  await fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'api-key': process.env.BREVO_API_KEY
+    },
+    body: JSON.stringify({
+      sender: { name: 'RED PRODUCT', email: 'ramaka947@gmail.com' },
+      to: [{ email }],
+      subject: 'Réinitialisation de votre mot de passe',
+      htmlContent: `<p>Cliquez pour vous connecter : <a href="https://red-product-xi.vercel.app/connexion.html">Se connecter</a></p>`
+    })
+  });
 };
 
-// ===== EMAIL ACTIVATION COMPTE =====
 const envoyerEmailActivation = async (email, nom, token) => {
-  const lienActivation = `https://red-product-kjmc.onrender.com/api/auth/activer/${token}`;
-
-  const mailOptions = {
-    from: '"RED PRODUCT" <abcaf5001@smtp-brevo.com>',
-    to: email,
-    subject: 'Activez votre compte RED PRODUCT',
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; background: #f0f0f0; border-radius: 10px;">
-        <h2 style="color: #45484B;">RED PRODUCT</h2>
-        <p>Bonjour <strong>${nom}</strong>,</p>
-        <p>Merci de vous être inscrit sur RED PRODUCT.</p>
-        <p>Cliquez sur le bouton ci-dessous pour activer votre compte :</p>
-        <a href="${lienActivation}" 
-           target="_blank"
-           style="display: inline-block; background: #45484B; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; margin: 16px 0; cursor: pointer;">
-          Activer mon compte
-        </a>
-        <p style="color: #999; font-size: 12px;">Si vous n'avez pas créé de compte, ignorez cet email.</p>
-      </div>
-    `
-  };
-
-  await transporter.sendMail(mailOptions);
+  const lien = `https://red-product-kjmc.onrender.com/api/auth/activer/${token}`;
+  await fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'api-key': process.env.BREVO_API_KEY
+    },
+    body: JSON.stringify({
+      sender: { name: 'RED PRODUCT', email: 'ramaka947@gmail.com' },
+      to: [{ email }],
+      subject: 'Activez votre compte RED PRODUCT',
+      htmlContent: `<p>Bonjour ${nom}, cliquez pour activer : <a href="${lien}">Activer mon compte</a></p>`
+    })
+  });
 };
 
 module.exports = { envoyerEmailResetPassword, envoyerEmailActivation };
