@@ -26,7 +26,12 @@ exports.register = async (req, res) => {
       tokenActivation
     });
 
-    await envoyerEmailActivation(email, nom, tokenActivation);
+    // Envoyer email d'activation (ne bloque pas si erreur)
+    try {
+      await envoyerEmailActivation(email, nom, tokenActivation);
+    } catch (emailError) {
+      console.error('Erreur envoi email activation:', emailError.message);
+    }
 
     await Notification.create({
       user: user._id,
