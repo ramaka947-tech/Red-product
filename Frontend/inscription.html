@@ -7,6 +7,8 @@
     <title>Inscription</title>
     <link rel="stylesheet" href="loader.css">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="auth-guard-inscription.js"></script>
 </head>
 
 <body class="bg-[#494C4F] min-h-screen flex justify-center items-center px-4 py-8">
@@ -53,8 +55,9 @@
     </form>
 
     <!-- Modal Succès Inscription -->
-    <div id="modalSucces" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
-        <div class="bg-white rounded-xl shadow-lg w-full max-w-[400px] p-8 text-center">
+    <div id="modalSucces" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4"
+        onclick="fermerModalEtRediriger(event)">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-[400px] p-8 text-center" onclick="event.stopPropagation()">
             <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i class="fa-solid fa-check text-green-500 text-2xl"></i>
             </div>
@@ -63,12 +66,19 @@
                 Un email de confirmation a été envoyé à votre adresse.<br>
                 Vérifiez votre boîte mail et cliquez sur le lien pour activer votre compte.
             </p>
+            <p class="text-[12px] text-[#AAAAAA] mb-4">Cliquez n'importe où pour continuer</p>
             <a href="connexion.html"
                 class="block bg-[#45484B] text-white px-8 py-3 rounded-xl text-[15px] font-medium hover:bg-[#555555] transition">
                 Aller à la connexion
             </a>
         </div>
     </div>
+
+    <script>
+        function fermerModalEtRediriger(event) {
+            window.location.href = 'connexion.html';
+        }
+    </script>
 
     <script src="inscription.js"></script>
 
